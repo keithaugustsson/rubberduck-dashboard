@@ -1,0 +1,95 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="rubberduck-weather">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      :host .wind-direction {
+        display: inline-block;
+        background-image: url(../../images/arrow_up_1.png);
+        background-size: contain;
+        height: 20px;
+        width: 20px;
+      }
+    </style>
+    <rubberduck-location-data position="{{position}}"></rubberduck-location-data>
+    <rubberduck-weather-data
+      coords="{{coords}}"
+      current="{{current}}"
+      forecast="{{forecast}}"></rubberduck-weather-data>
+    <div><span>{{temperature}}</span><span>&deg;C</span></div>
+    <div>Max: <span>{{maxTemperature}}</span><span>&deg;C</span></div>
+    <div>Min: <span>{{minTemperature}}</span><span>&deg;C</span></div>
+    <div><div id="windDirection" style="{{windDirectionStyle}}" class="wind-direction"></div> <span>{{windSpeed}}</span>m/s</div>
+    <div>{{description}}</div>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'rubberduck-weather',
+
+      properties: {
+        position: {
+          type: Object,
+          notify: true
+        },
+        coords: {
+          type: Object,
+          computed: 'computeCoords(position)'
+        },
+        temperature: {
+          type: Number,
+          computed: 'computeTemperature(current)'
+        },
+        maxTemperature: {
+          type: Number,
+          computed: 'computeMaxTemperature(forecast)'
+        },
+        minTemperature: {
+          type: Number,
+          computed: 'computeMinTemperature(forecast)'
+        },
+        description: {
+          type: String,
+          computed: 'computeDescription(forecast)'
+        },
+        windDirectionStyle: {
+          type: String,
+          computed: 'computeWindDirectionStyle(forecast)'
+        },
+        windSpeed: {
+          type: Number,
+          computed: 'computeWindSpeed(current)'
+        }
+      },
+      computeCoords: function (position) {
+        return position.coords;
+      },
+      computeTemperature: function (current) {
+        return current && current.main && current.main.temp;
+      },
+      computeMaxTemperature: function (forecast) {
+
+        return forecast && forecast.list && forecast.list[0].temp.max;
+      },
+      computeMinTemperature: function (forecast) {
+        return forecast && forecast.list && forecast.list[0].temp.min;
+      },
+      computeDescription: function (forecast) {
+        return forecast && forecast.list && forecast.list[0].weather[0].description;
+      },
+      computeWindDirectionStyle: function (forecast) {
+        this.$.windDirection.style.transform = forecast && forecast.list && 'rotate(' + forecast.list[0].deg + 'deg)';
+        return null;
+      },
+      computeWindSpeed: function (current) {
+        return current && current.wind && current.wind.speed;
+      }
+    });
+  })();
+  </script>
+</dom-module>

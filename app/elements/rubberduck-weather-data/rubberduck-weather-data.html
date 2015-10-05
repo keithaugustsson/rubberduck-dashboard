@@ -1,0 +1,110 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="rubberduck-weather-data">
+  <style>
+    :host {
+      display: none;
+    }
+  </style>
+  <template>
+    <iron-ajax id="current"
+      auto
+      url="{{currentUrl}}"
+      handle-as="json"
+      params="{{computeParams(coords, locationId)}}"
+      on-response="handleCurrent"></iron-ajax>
+    <iron-ajax id="forecast"
+      auto
+      url="{{forecastUrl}}"
+      handle-as="json"
+      params="{{computeParams(coords, locationId)}}"
+      on-response="handleForecast"></iron-ajax>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'rubberduck-weather-data',
+
+      properties: {
+        currentUrl: {
+          type: String,
+          value: 'http://api.openweathermap.org/data/2.5/weather'
+        },
+        forecastUrl: {
+          type: String,
+          value: 'http://api.openweathermap.org/data/2.5/forecast/daily'
+        },
+        current: {
+          type: Object,
+          notify: true
+        },
+        forecast: {
+          type: Object,
+          notify: true
+        },
+        coords: {
+          type: Object,
+          notify: true
+        },
+        locationId: {
+          type: Number,
+          notify: true,
+          value: null
+        }
+      },
+      computeParams: function (coords, locationId) {
+        if(locationId) {
+          return {
+            id: locationId,
+            units: 'metric',
+            cnt: 1
+          };
+        }
+
+        return {
+          lon: coords.longitude,
+          lat: coords.latitude,
+          units: 'metric',
+          cnt: 1
+        };
+      },
+
+      ready: function() {
+        (function getCurrent() {
+          this.$.current.generateRequest();
+          setTimeout(getCurrent.bind(this), 15 * 60 * 1000);
+        }.bind(this)());
+        (function getForecast() {
+          this.$.forecast.generateRequest();
+          setTimeout(getForecast.bind(this), 60 * 60 * 1000);
+        }.bind(this)());
+      },
+
+      handleCurrent: function (event, data) {
+        if(!this.locationId && data.response.id) {
+          this.locationId = data.response.id;
+        }
+        this.current = data.response;
+      },
+      handleForecast: function (event, data) {
+        if(!this.locationId && data.response.id) {
+          this.locationId = data.response.id;
+        }
+        this.forecast = data.response;
+      }
+    });
+  })();
+  </script>
+</dom-module>
