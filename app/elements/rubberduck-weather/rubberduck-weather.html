@@ -83,7 +83,7 @@
         return forecast && forecast.list && forecast.list[0].weather[0].description;
       },
       computeWindDirectionStyle: function (forecast) {
-        this.$.windDirection.style.transform = forecast && forecast.list && 'rotate(' + forecast.list[0].deg + 'deg)';
+        this.$.windDirection.style.transform = forecast && forecast.list && 'rotate(' + (forecast.list[0].deg - 180) + 'deg)';
         return null;
       },
       computeWindSpeed: function (current) {
