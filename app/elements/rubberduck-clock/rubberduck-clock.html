@@ -51,11 +51,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       formatTime: function (time, format) {
         return time.format(format);
       },
+
+      _setNewTime: function () {
+        this.time = moment();
+      },
+
       ready: function () {
-        (function loop() {
-          this.time = moment();
-          setTimeout(loop.bind(this), 1000);
-        }.bind(this)());
+        setInterval(this._setNewTime.bind(this), 1000);
       }
     });
   })();

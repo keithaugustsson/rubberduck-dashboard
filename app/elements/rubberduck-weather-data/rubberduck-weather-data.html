@@ -81,15 +81,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
       },
 
+      _getCurrent: function () {
+        this.$.current.generateRequest();
+      },
+
+      _getForecast: function () {
+        this.$.forecast.generateRequest();
+      },
+
       ready: function() {
-        (function getCurrent() {
-          this.$.current.generateRequest();
-          setTimeout(getCurrent.bind(this), 15 * 60 * 1000);
-        }.bind(this)());
-        (function getForecast() {
-          this.$.forecast.generateRequest();
-          setTimeout(getForecast.bind(this), 60 * 60 * 1000);
-        }.bind(this)());
+        setInterval(this._getCurrent.bind(this), 15 * 60 * 1000);
+        setInterval(this._getForecast.bind(this), 60 * 60 * 1000);
       },
 
       handleCurrent: function (event, data) {
